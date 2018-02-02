@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+    </head>
+	<center>
+	<font size = "10"><u>YOUR CHAT BEGINS</u></font><br/><br/><br/>
+    <body background->
+	    <br/>
+		<br/>
+		<br/>
+		<br/>
+       <u><font size = "8">Click TO Log Out</u></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="logout"style="width:80px;height:50px">LogOut</button>
+
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+
+		<fieldset>
+		<legend>Chatting</legend>
+        <input id="username" type="text" placeholder="User Name" style="width:330px;height:30px" /> <br/>
+
+        	<div id="output" style="text-align:left"></div>
+            <div id="feedback"></div>
+
+	    </br>
+        <input id="message" type="text" placeholder="Message" style="width:280px;height:20px"/>
+        <button id="send"style="width:50px;height:30px">Send</button>
+		</fieldset>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+	</body>
+	</center>
+    <script >
+
+var socket = io.connect('http://localhost:9090');
+
+
+var message = document.getElementById('message'),
+      username = document.getElementById('username'),
+      send = document.getElementById('send'),
+      output = document.getElementById('output'),
+      feedback = document.getElementById('feedback'),
+      logout = document.getElementById('logout'),
+	  outcall = document.getElementById('outcall'),
+	  incall = document.getElementById('incall');
+
+send.addEventListener('click', function()
+{
+    socket.emit('chat', {
+        message: message.value,
+        username: username.value
+    });
+    message.value = "";
+});
+
+message.addEventListener('keypress', function()
+{
+    socket.emit('typing', username.value);
+});
+
+logout.addEventListener('click',function()
+{
+ window.location.replace("login.html");
+});
+/*
+outcall.addEventListener('click',function()
+{
+ window.location.replace("transmissor.html");
+});
+
+incall.addEventListener('click',function()
+{
+ window.location.replace("receptor.html");
+});
+*/
+// Listen for events
+socket.on('chat', function(data)
+{
+    feedback.innerHTML = '';
+    output.innerHTML += '<p><strong>' + data.username + ': </strong>' + data.message + '</p>';
+});
+
+socket.on('typing', function(data)
+{
+    feedback.innerHTML = '<p><em>' + data + ' is typing a message...</em></p>';
+});
+
+socket.on('display',function(data)
+{ 
+   username.value = data.username;
+});
+
+</script>
+</html>
